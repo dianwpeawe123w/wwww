@@ -142,9 +142,12 @@ export function bridgeDenoSocket(denoSocket, clientSocket) {
     open = true;
     while (pending.length) sendNow(pending.shift());
   };
-  denoSocket.onmessage = (event) => clientSocket._emit('message', { data: event.data });
-  denoSocket.onclose = (event) => clientSocket._emit('close', { code: event.code, reason: event.reason });
-  denoSocket.onerror = () => clientSocket._emit('close', { code: 1006, reason: 'Socket error' });
+  // send() delivers to the opposite endpoint, where the worker listens.
+  // Emitting on clientSocket would feed the outbound listener below and echo
+  // the client's bytes straight back without invoking the protocol handler.
+  denoSocket.onmessage = (event) => clientSocket.send(event.data);
+  denoSocket.onclose = (event) => clientSocket.close(event.code, event.reason);
+  denoSocket.onerror = () => clientSocket.close(1006, 'Socket error');
 
   clientSocket.addEventListener('message', (event) => {
     if (open) sendNow(event.data);
