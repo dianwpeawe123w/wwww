@@ -1,0 +1,23 @@
+Validation results
+==================
+Xray core: 26.3.27 (Windows x64)
+Deno used for local tests: 2.9.7
+
+PASS - Actual Xray client -> existing live Deno endpoint -> HTTPS example.com:
+       HTTP 200, 577 response bytes, using VLESS XHTTP stream-one + TLS + HTTP/2.
+PASS - Patched relay over local TLS + HTTP/2: generated Xray subscription node,
+       1 MiB random binary upload and identical download.
+PASS - Eight requests across concurrent XHTTP connections through patched relay.
+PASS - Complete generated Xray JSON passes Xray configuration validation.
+PASS - Nine Deno regression tests: split headers (every split point), VLESS
+       IPv4/IPv6/domain addresses and options, Trojan one-byte chunks, truncated
+       and timed-out input, real TCP relay, authentication rejection, subscription
+       fields and WS retention, enable/disable toggle, custom path, cancellation.
+PASS - Deno module checks.
+PASS - v2rayN source reviewed: VLESS URI parser accepts type=xhttp, host, path,
+       mode=stream-one and ALPN; core configuration builder emits xhttpSettings.
+
+Limits: v2rayN desktop UI was not run. The patched server was tested locally;
+its updated subscription output needs your GitHub commit and Deno deployment.
+Local TLS testing used a pinned temporary test certificate, not insecure TLS.
+Only stream-one over HTTP/2 was validated; no claim is made for other XHTTP modes.

@@ -20,6 +20,7 @@
     "smoke": "deno run --allow-all --unstable-kv tools/smoke.js",
     "dns": "deno run --allow-all --unstable-kv tools/dns-local.js",
     "probe": "deno run --allow-all --unstable-kv tools/probe.js",
+    "test:xhttp": "deno test --allow-net tools/xhttp-test.js",
     "reset": "deno run --allow-all tools/reset.js"
   }
 }

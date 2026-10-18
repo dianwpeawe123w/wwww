@@ -223,3 +223,39 @@ config:
 deno deploy create --org <org> --app <app> --source local
 ```
 
+
+
+## VLESS XHTTP over TLS (stream-one)
+
+The XHTTP setting now adds `BlueKnight-VLESS-XHTTP-*` nodes to `/sub/vless`,
+`/sub/xray` (base64 v2rayN feed), and `/sub/xray-json`. Existing WS nodes stay
+available. The panel's VLESS subscription badge reflects whether XHTTP is enabled.
+Clash, Sing-box, Trojan and Shadowsocks feeds retain their existing transports.
+
+Use an XHTTP-capable v2rayN version with the Xray core. Refresh the VLESS or Xray
+subscription, then select a node whose name contains `VLESS-XHTTP`. The generated
+node uses TLS on the existing configured port, ALPN `h2`, `mode=stream-one`, and
+the configured XHTTP path (default `/bk-xhttp`). `auto`, `packet-up` and `stream-up`
+are not implemented. XHTTP nodes deliberately do not inherit WS-specific fragment,
+ECH or final-mask URI options; these combinations have not been validated.
+
+The relay buffers incomplete VLESS/Trojan headers across HTTP chunks, rejects
+incomplete or invalid headers, limits the initial header wait to 10 seconds, and
+closes upstream connections when the response is cancelled or the client aborts.
+
+Validation: Xray 26.3.27 connected to the live Deno endpoint using TLS + HTTP/2
+stream-one and loaded an HTTPS page. The patched relay was tested locally over
+TLS + HTTP/2 using a node from the generated Xray JSON subscription: 1 MiB binary
+upload/download and eight concurrent requests passed. The complete generated
+Xray JSON passed Xray's configuration validation. The v2rayN desktop UI itself
+was not run, and the patched version still needs deployment to your Deno app.
+
+Run the regression tests:
+
+```sh
+deno task test:xhttp
+```
+
+For direct Deno use, connect to your Deno hostname. The earlier WebSocket-only
+Cloudflare relay does not forward XHTTP POST requests; using it for XHTTP would
+require a separate streaming HTTP proxy implementation and testing.

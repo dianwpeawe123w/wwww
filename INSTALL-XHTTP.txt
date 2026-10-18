@@ -1,0 +1,32 @@
+VLESS XHTTP + TLS update
+========================
+This ZIP contains updated source files, not a new server account.
+
+Required changes in your existing GitHub repository:
+1. Replace src/worker.js with the file from this ZIP.
+2. Add src/shims/xhttp.js at exactly that path.
+3. Commit both files and let Deno Deploy rebuild the app.
+
+Optional: also replace deno.json and README.md and add tools/xhttp-test.js
+for the test command and documentation. Preserve src/shims/websocket.js;
+this update does not replace the working WebSocket bridge.
+
+After deployment:
+- In panel settings, enable "VLESS XHTTP subscriptions" if it is disabled.
+- Keep the XHTTP path as /bk-xhttp, or use your own unique path.
+- Refresh your VLESS or v2rayN/Xray subscription in v2rayN.
+- Select BlueKnight-VLESS-XHTTP-443 (or the matching configured-port node).
+- Use the Xray core with XHTTP support, TLS enabled, ALPN h2 and stream-one.
+- Existing WS nodes remain available in the same feeds.
+
+Direct Deno connections only were validated. The earlier Worker accepts only
+WebSocket upgrades, so it will reject XHTTP POST requests. Use the Deno domain
+as Address, Host and SNI for these XHTTP nodes.
+
+Do not select auto, packet-up or stream-up: this relay implements stream-one.
+Clash/Sing-box and Trojan/Shadowsocks subscriptions keep their current transport.
+
+Run regression tests locally with:
+  deno task test:xhttp
+
+No changes have been pushed to GitHub or deployed to your account by this chat.
